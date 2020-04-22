@@ -16,35 +16,9 @@ import GithubState from "../src/context/github/GithubState";
  
  
  const App = () =>  {
-  const [repos, setRepos] = useState([]); 
   const [loading, setLoading] = useState(false); 
   const [alert, setAlert] = useState(null); 
 
- /*
-    async componentDidMount(){
-     this.setState.loading = true; 
-     const res = await axios.get(`https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SERCRET}`); 
-     this.setState({users: res.data, loading: false})
-     }
-     */ 
- 
-     // Search Github users 
-    
-  
-   
- 
- 
-     // get user's repositories from Github
-     const getUserRepos = async (username) => {
-      setLoading(true); 
-      const res = await axios.get(`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SERCRET}`); 
-       setRepos(res.data);
-       setLoading(false); 
-     }
- 
- 
-   
- 
      // set an alert if the search string is empty 
  
      const showAlert = ( msg, type) => {
@@ -76,9 +50,7 @@ import GithubState from "../src/context/github/GithubState";
          )} />
          <Route exact path="/about" component={About} /> 
  
-         <Route exact path="/indiuser/:login" render={props => (
-           <Indiuser {...props } getUserRepos={getUserRepos} repos={repos} /> 
-         )} /> 
+         <Route exact path="/indiuser/:login" component={Indiuser} /> 
  
     </Switch>
          </div>
