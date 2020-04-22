@@ -1,107 +1,93 @@
-import React, {Component, Fragment} from 'react';
-import {BrowserRouter as Router, Switch, Route } from "react-router-dom"; 
-import NavBar from "./components/layout/Navbar"; 
-import Search from "./components/users/Search"; 
-import Alert from "./components/layout/Alert"; 
-import About from "./components/pages/About"; 
-import Indiuser from './components/users/Indiuser'
-import Users from "./components/users/Users"; 
-import axios from "axios"; 
+ 
 
- import './App.css';
+ import React, {useState, Fragment} from 'react';
+ import {BrowserRouter as Router, Switch, Route } from "react-router-dom"; 
+ import NavBar from "./components/layout/Navbar"; 
+ import Search from "./components/users/Search"; 
+ import Alert from "./components/layout/Alert"; 
+ import About from "./components/pages/About"; 
+ import Indiuser from './components/users/Indiuser'
+ import Users from "./components/users/Users"; 
+ import axios from "axios"; 
 
+import GithubState from "../src/context/github/GithubState"; 
+ 
+  import './App.css';
+ 
+ 
+ const App = () =>  {
+  const [repos, setRepos] = useState([]); 
+  const [loading, setLoading] = useState(false); 
+  const [alert, setAlert] = useState(null); 
 
-class App extends Component {
-
-  state= {
-    loading: false, 
-    users: [], 
-    user: {},
-    repos: [],
-    alert: null,
-  }
-/*
-   async componentDidMount(){
-    this.setState.loading = true; 
-    const res = await axios.get(`https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SERCRET}`); 
-    this.setState({users: res.data, loading: false})
-    }
-    */ 
-
-    // Search Github users 
-    searchUsers = async text => {
-      this.setState({loading:true}); 
-      const res = await axios.get(`https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SERCRET}`); 
-      this.setState({users: res.data.items, loading: false});
-    }; 
-
-
-    // Get a single Github User 
-
-    getUser = async (username) => {
-      this.setState({loading:true}); 
-      const res = await axios.get(`https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SERCRET}`); 
-      this.setState({user: res.data, loading: false});
-    }
-
-
-    // get user's repositories from Github
-    getUserRepos = async (username) => {
-      this.setState({loading:true}); 
-      const res = await axios.get(`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SERCRET}`); 
-      this.setState({repos: res.data, loading: false});
-    }
-
-
-    // Clear users 
-    clearUsers = () => {
-      this.setState({users: []}); 
-    };
-
-    // set an alert if the search string is empty 
-
-    setAlert = ( msg, type) => {
-      this.setState({ alert: { msg, type }}); 
-
-      setTimeout(() => this.setState({alert: null}), 5000); 
-
-    } 
-
-  render() { 
-    const { user, users, loading, repos } = this.state; 
-  return (
-    <Router>
-    <div className="App">
-      <NavBar title=" Github Finder" /> 
-
-      <div className="container"> 
-      <Alert alert={this.state.alert} />
-
-      <Switch> 
-
-        <Route exact path="/" render={props => (
-
-            <Fragment>
-              <Search searchUsers={this.searchUsers} clearUsers={this.clearUsers} showClear= {users.length > 0 ? true : false } setAlert = {this.setAlert} /> 
-
-              <Users loading = {loading} users={users}  /> 
-              
-               </Fragment>
-
-        )} />
-        <Route exact path="/about" component={About} /> 
-
-        <Route exact path="/indiuser/:login" render={props => (
-          <Indiuser {...props } getUser={this.getUser} getUserRepos={this.getUserRepos} user={user} repos={repos} loading={loading} /> 
-        )} /> 
-
-   </Switch>
-        </div>
-   
-    </div> 
+ /*
+    async componentDidMount(){
+     this.setState.loading = true; 
+     const res = await axios.get(`https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SERCRET}`); 
+     this.setState({users: res.data, loading: false})
+     }
+     */ 
+ 
+     // Search Github users 
+    
   
-  </Router>
-  );
-}} 
-
-export default App;
+   
+ 
+ 
+     // get user's repositories from Github
+     const getUserRepos = async (username) => {
+      setLoading(true); 
+      const res = await axios.get(`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SERCRET}`); 
+       setRepos(res.data);
+       setLoading(false); 
+     }
+ 
+ 
+   
+ 
+     // set an alert if the search string is empty 
+ 
+     const showAlert = ( msg, type) => {
+       setAlert({ msg, type }); 
+       setTimeout(() => setAlert( null), 5000); 
+ 
+     } 
+ 
+      return (
+     <GithubState>
+     <Router>
+     <div className="App">
+       <NavBar title=" Github Finder" /> 
+ 
+       <div className="container"> 
+       <Alert alert={alert} />
+ 
+       <Switch> 
+ 
+         <Route exact path="/" render={props => (
+ 
+             <Fragment>
+               <Search setAlert = {showAlert} /> 
+ 
+               <Users  /> 
+               
+                </Fragment>
+ 
+         )} />
+         <Route exact path="/about" component={About} /> 
+ 
+         <Route exact path="/indiuser/:login" render={props => (
+           <Indiuser {...props } getUserRepos={getUserRepos} repos={repos} /> 
+         )} /> 
+ 
+    </Switch>
+         </div>
+    
+     </div> 
+   
+   </Router>
+   </GithubState>
+   );
+ }
+ 
+ export default App;
