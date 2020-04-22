@@ -8,40 +8,30 @@
  import About from "./components/pages/About"; 
  import Indiuser from './components/users/Indiuser'
  import Users from "./components/users/Users"; 
- import axios from "axios"; 
 
 import GithubState from "../src/context/github/GithubState"; 
+import AlertState from "../src/context/alert/alertState"; 
  
   import './App.css';
  
  
  const App = () =>  {
-  const [loading, setLoading] = useState(false); 
-  const [alert, setAlert] = useState(null); 
-
-     // set an alert if the search string is empty 
- 
-     const showAlert = ( msg, type) => {
-       setAlert({ msg, type }); 
-       setTimeout(() => setAlert( null), 5000); 
- 
-     } 
- 
-      return (
+       return (
      <GithubState>
-     <Router>
-     <div className="App">
-       <NavBar title=" Github Finder" /> 
+       <AlertState>
+         <Router>
+         <div className="App">
+           <NavBar title=" Github Finder" /> 
  
-       <div className="container"> 
-       <Alert alert={alert} />
+           <div className="container"> 
+             <Alert />
  
-       <Switch> 
+            <Switch> 
  
-         <Route exact path="/" render={props => (
+             <Route exact path="/" render={props => (
  
              <Fragment>
-               <Search setAlert = {showAlert} /> 
+               <Search/> 
  
                <Users  /> 
                
@@ -58,6 +48,7 @@ import GithubState from "../src/context/github/GithubState";
      </div> 
    
    </Router>
+   </AlertState>
    </GithubState>
    );
  }

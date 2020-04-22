@@ -5,7 +5,7 @@ import {Link} from "react-router-dom";
 import GithubContext from "../../context/github/githubContext"; 
 
 
-const Indiuser = ({  repos, match}) =>  {
+const Indiuser = ({ repos, match}) =>  {
 
     const githubContext = useContext(GithubContext); 
 
